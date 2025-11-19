@@ -1,0 +1,199 @@
+benchmarks:
+  - id: "ra_joins"
+    question: "Explain natural join, theta join, and outer join in relational algebra, and state associativity/commutativity properties relevant to query optimization"
+    expected_answer: "Natural join forms a Cartesian product, selects tuples with equal values on common attributes, and removes duplicate attributes, while theta join combines a Cartesian product with a general predicate; both enable combining relations under conditions, and natural join is commutative and associative, which supports join reordering in optimization; outer joins (left, right, full) extend join by padding unmatched tuples with nulls to avoid loss of information and follow join semantics except where unmatched tuples are added with nulls."
+    keywords: ["associative", "commutative", "join reordering", "padding"]
+    similarity_threshold: 0.78
+    golden_chunks: null  # Optional: list of most relevant chunk texts for this question
+    
+  - id: "aggregation_grouping"
+    question: "How do aggregation with grouping and generalized projection work, and how are nulls treated in selections, joins, projections, set operations, and aggregates"
+    expected_answer: "Aggregation partitions tuples by grouping attributes and applies functions like sum, avg, min, max to each group, producing one result per group; generalized projection permits arithmetic expressions and attribute renaming in the projection list; with nulls, selections treat comparisons as unknown and exclude them, joins inherit selection semantics, projections and set operations treat identical tuples with nulls as duplicates, and aggregates ignore nulls in aggregated attributes and return null only when the multiset is empty."
+    keywords: ["aggregation", "grouping", "generalized projection", "ignore nulls", "attribute renaming", "duplicates"]
+    similarity_threshold: 0.8
+    
+  - id: "acid_properties"
+    question: "What are the ACID properties of transactions, and how do concurrency control and recovery components enforce them during concurrent execution and failures"
+    expected_answer: "Atomicity ensures a transaction's actions are all-or-nothing, enforced by abort/rollback and recovery that can undo partial effects; consistency requires each transaction to preserve database integrity when run alone and relies on the scheduler to admit serializable, recoverable, and preferably cascadeless schedules; isolation makes concurrent executions equivalent to some serial order, commonly achieved with two-phase locking variants that prevent reads of uncommitted data; durability guarantees committed effects persist across crashes via logging to stable storage and redo on restart; together, the transaction manager, concurrency-control (e.g., lock manager under strict 2PL), and recovery manager (logging/checkpoints) provide these guarantees, and in distributed settings coordinators run two-phase commit to atomically commit across sites."
+    keywords: ["atomicity", "consistency", "isolation", "durability", "recoverable", "checkpoints", "two-phase locking", "two-phase commit"]
+    similarity_threshold: 0.82
+
+  - id: "bptree"
+    question: "How does a B+ tree index organize keys and support search, insert, and delete, and why is it preferred over binary trees for disk-based access"
+    expected_answer: "A B+ tree is a balanced, multiway search tree where all keys appear in the leaf level linked for range scans, and internal nodes guide search using separators; search descends from root to a leaf in height proportional to log base fan-out, insert splits full nodes to maintain balance, and delete may redistribute or merge nodes to keep occupancy; high fan-out reduces tree height and I/O, making B+ trees efficient on disk and better than binary trees whose height and I/O would be much larger."
+    keywords: ["fan-out", "leaf linkage", "merge", "balanced height", "reduced height"]
+    similarity_threshold: 0.78
+
+  - id: "fd_normalization"
+    question: "What are functional dependencies and how are they used to achieve BCNF or 3NF through lossless, dependency-preserving decomposition"
+    expected_answer: "A functional dependency X -> Y asserts that tuples agreeing on X must agree on Y; BCNF requires every nontrivial FD have a superkey on the left, while 3NF relaxes this by allowing attributes on the right that are part of a key; normalization decomposes a relation into smaller ones such that the join is lossless (typically ensured by a common key/FD condition) and preferably preserves dependencies so that constraints can be enforced without recomputation; BCNF eliminates redundancy more aggressively but may not preserve all FDs, whereas 3NF guarantees dependency preservation with minimal redundancy."
+    keywords: ["common key", "lossless join", "dependency preservation", "normalization", "superkey"]
+    similarity_threshold: 0.7
+
+  - id: "sql_isolation"
+    question: "What isolation guarantees does SQL provide by default, what anomalies can occur at weaker levels, and how do stricter levels prevent them"
+    expected_answer: "SQL's serializable level aims for schedules equivalent to some serial execution and prevents phenomena like dirty reads, nonrepeatable reads, and phantoms; weaker levels like read committed prevent dirty reads but allow nonrepeatable reads and phantoms, while repeatable read prevents nonrepeatable reads but may still allow phantoms; strict two-phase locking or predicate locking/index locking can enforce serializability by holding appropriate locks until commit, eliminating these anomalies."
+    keywords: ["serializable", "read committed", "repeatable read", "dirty read", "nonrepeatable read", "phantom", "two-phase locking", "predicate locking"]
+    similarity_threshold: 0.7
+
+  - id: "primary_foreign_keys"
+    question: "Explain primary keys and foreign keys"
+    expected_answer: "A primary key is a set of one or more attributes that uniquely identifies each tuple in a relation, chosen from candidate keys which are minimal superkeys; primary key attributes are underlined in schema diagrams and cannot have null values. A foreign key is a set of attributes in one relation (the referencing relation) that references the primary key of another relation (the referenced relation), establishing a referential integrity constraint that requires values in the foreign key to match values in the referenced primary key, thereby linking related data across tables."
+    keywords: ["primary key", "foreign key", "unique identifier", "referential integrity", "candidate key", "superkey"]
+    similarity_threshold: 0.72
+
+  - id: "database_schema"
+    question: "What is a database schema"
+    expected_answer: "A database schema is the overall logical design and structure of the database, analogous to variable declarations in a program, defining the relations, their attributes, data types, and constraints including primary keys and foreign keys. The schema remains relatively stable over time, while a database instance represents the actual collection of data stored at a particular moment, with values that change as information is inserted, deleted, or modified."
+    keywords: ["database schema", "logical design", "structure", "database instance", "relations", "attributes", "constraints"]
+    similarity_threshold: 0.70
+
+  - id: "book_authors"
+    question: "Tell me about the authors of the book"
+    expected_answer: "The authors of Database System Concepts Seventh Edition are Abraham Silberschatz, a Professor at Yale University and former Bell Labs vice president who is an ACM and IEEE fellow; Henry F. Korth, a Professor at Lehigh University who previously worked at Bell Labs and is also an ACM and IEEE fellow; and S. Sudarshan, the Subrao M. Nilekani Chair Professor at the Indian Institute of Technology Bombay who received his Ph.D. from the University of Wisconsin and is an ACM fellow, with research focusing on query processing and optimization."
+    keywords: ["Abraham Silberschatz", "Henry Korth", "Sudarshan", "Yale", "Lehigh", "IIT Bombay", "Bell Labs"]
+    similarity_threshold: 0.65
+
+  - id: "aries_atomicity"
+    question: "How does the recovery manager use ARIES to ensure atomicity"
+    expected_answer: "The ARIES recovery algorithm ensures atomicity by maintaining a write-ahead log where all updates are recorded before being applied to the database, with each log record containing transaction ID, data item, old value, and new value. During normal operation, log records are written to stable storage before the transaction commits; if a transaction aborts or the system crashes, the recovery manager uses the log to undo uncommitted transactions by applying the old values in reverse order, ensuring that partial effects of incomplete transactions are completely rolled back and the all-or-nothing property of atomicity is preserved."
+    keywords: ["ARIES", "write-ahead log", "log records", "undo", "rollback", "stable storage", "atomicity", "recovery"]
+    similarity_threshold: 0.75
+
+  - id: "oltp_vs_analytics"
+    question: "Contrast the goals of Online Transaction Processing and data analytics"
+    expected_answer: "Online Transaction Processing (OLTP) supports a large number of concurrent users performing small, fast transactions that retrieve and update relatively small amounts of data with requirements for high throughput, low latency, and immediate consistency, typically using normalized schemas optimized for transactional integrity. Data analytics, in contrast, processes large volumes of historical data to draw conclusions and infer patterns for business intelligence and decision support, involving complex queries that scan and aggregate data across many records, often using denormalized schemas like star schemas in data warehouses optimized for read-heavy analytical workloads rather than transactional updates."
+    keywords: ["OLTP", "online transaction processing", "data analytics", "business intelligence", "decision support", "throughput", "data warehouse", "transactional", "analytical"]
+    similarity_threshold: 0.73
+
+  - id: "lossy_decomposition"
+    question: "Show me what happens during a lossy decomposition"
+    expected_answer: "A lossy decomposition occurs when a relation R is decomposed into smaller relations R1 and R2 such that joining them back together produces spurious tuples not present in the original relation, resulting in loss of information about which attribute combinations actually existed. This happens when the intersection of R1 and R2 does not form a superkey for either relation, violating the lossless-join condition; the natural join of the decomposed relations generates extra tuples from invalid combinations, making it impossible to reconstruct the original data accurately, which is why database design insists that all decompositions must be lossless."
+    keywords: ["lossy decomposition", "spurious tuples", "lossless join", "superkey", "natural join", "information loss", "functional dependency"]
+    similarity_threshold: 0.70
+
+  - id: "iterator_model_query_execution"
+    question: "Describe the iterator model used in query operators and the purpose of the open(), next(), and close() interface."
+    expected_answer: "The iterator model represents each operator as a self-contained module exposing open(), next(), and close(). open() initializes state, next() returns the next tuple or NULL, and close() releases resources. This design composes operators into pipelines and enables modular, pull-based execution."
+    keywords: ["iterator model", "open-next-close", "query execution", "operators"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+  
+  - id: "threadsafe_hash_table_concurrency"
+    question: "What are the main concurrency issues in a hash table, and how do fine-grained locks improve throughput compared to a global lock?"
+    expected_answer: "Concurrent hash tables suffer from race conditions when multiple threads modify shared buckets; using one global lock serializes operations and restricts scalability. Fine-grained locking, such as per-bucket or striped locks, reduces contention and allows different buckets to be accessed in parallel, improving throughput while maintaining correctness."
+    keywords: ["concurrency", "race conditions", "fine-grained locking", "bucket locking", "thread safety"]
+    similarity_threshold: 0.78
+    golden_chunks: null
+
+  - id: "hash_table_lock_striping_vs_bucket"
+    question: "Explain the difference between lock striping and per-bucket locking in a thread-safe hash table."
+    expected_answer: "Per-bucket locking assigns one lock per hash bucket, maximizing parallelism but increasing overhead when many locks exist. Lock striping groups multiple buckets under a single lock, reducing lock count and overhead while still enabling more concurrency than a global lock. The trade-off is between granularity and lock management cost."
+    keywords: ["lock striping", "per-bucket locking", "granularity", "overhead"]
+    similarity_threshold: 0.78
+    golden_chunks: null
+
+  - id: "hash_function_contention"
+    question: "How does the choice of hash function affect contention and performance in concurrent hash tables?"
+    expected_answer: "A poor hash function leads to uneven key distribution, causing many keys to map to the same bucket, which increases lock contention and reduces parallelism. A high-quality hash function spreads keys uniformly across buckets, balancing load and reducing contention."
+    keywords: ["hash function", "contention", "key distribution", "load balancing"]
+    similarity_threshold: 0.78
+    golden_chunks: null
+
+  - id: "ordered_index_range_queries"
+    question: "Why are ordered indexes necessary for efficient range queries, and why can’t hash indexes support them?"
+    expected_answer: "Ordered indexes maintain keys in sorted order, enabling range scans by traversing ordered leaf nodes. Hash indexes destroy ordering by hashing, supporting only exact-key lookups; thus they cannot efficiently retrieve key ranges or ordered results."
+    keywords: ["ordered index", "range query", "hash index", "sorted order"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+
+  - id: "ordered_index_complexity"
+    question: "What are the time complexities of point lookups and range scans in an ordered index?"
+    expected_answer: "Point lookups in an ordered index like a B+ tree run in O(log N) to descend the tree, while range scans cost O(log N + K), where K is the number of returned items, because only the initial lookup requires logarithmic time and the remainder is a sequential scan."
+    keywords: ["complexity", "point lookup", "range scan", "B+ tree"]
+    similarity_threshold: 0.78
+    golden_chunks: null
+
+  - id: "bplustree_structure"
+    question: "Describe the structure of a B+ tree and the roles of internal and leaf nodes."
+    expected_answer: "A B+ tree is a multi-way balanced tree whose internal nodes contain separator keys directing search, while leaf nodes store all actual key-value pairs and are linked for range scans. All leaves reside at the same level, ensuring balanced height and predictable performance."
+    keywords: ["B+ tree", "internal nodes", "leaf nodes", "balanced tree"]
+    similarity_threshold: 0.82
+    golden_chunks: null
+
+  - id: "bplustree_insertion_split"
+    question: "What happens during B+ tree insertion when a node is full, and how does the split process work?"
+    expected_answer: "When a node is full during insertion, it is split into two nodes around the median key; for leaf nodes, keys are divided and the median is copied upward, while for internal nodes the median key is promoted. Splitting maintains node capacity constraints and preserves height balance."
+    keywords: ["B+ tree", "insertion", "node split", "median key", "promotion"]
+    similarity_threshold: 0.82
+    golden_chunks: null
+
+  - id: "bplustree_leaf_storage_reason"
+    question: "Why do B+ trees store all key-value pairs only in leaf nodes, and what advantage does this give?"
+    expected_answer: "Storing all actual records in the leaves simplifies internal nodes to keys only, increasing fan-out and decreasing tree height. This yields fewer I/Os, predictable range scans, and faster traversal."
+    keywords: ["leaf nodes", "fan-out", "records", "range scans"]
+    similarity_threshold: 0.78
+    golden_chunks: null
+
+  - id: "trie_prefix_lookup"
+    question: "Compare tries and hash tables for prefix-based lookups. When is a trie preferred?"
+    expected_answer: "Hash tables support only exact key lookups, while tries allow efficient prefix queries by following shared prefixes in the tree structure. Tries are preferred when workloads include prefix searches, autocomplete, or dictionary-style operations where structural sharing improves performance."
+    keywords: ["trie", "hash table", "prefix lookup", "autocomplete"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+
+  - id: "inverted_index_boolean_queries"
+    question: "What is an inverted index, and how does it support text search operations such as AND/OR queries?"
+    expected_answer: "An inverted index maps each term to a posting list of documents containing it. Boolean queries like AND and OR are implemented by intersecting or unioning posting lists, enabling efficient text search across large document sets."
+    keywords: ["inverted index", "posting list", "boolean query", "text search"]
+    similarity_threshold: 0.82
+    golden_chunks: null
+
+  - id: "rtree_spatial_nodes"
+    question: "What data does an R-tree store in each node, and how does it support spatial queries such as intersection or containment?"
+    expected_answer: "R-tree nodes store Minimum Bounding Rectangles (MBRs) that enclose child rectangles or objects. Spatial queries evaluate whether rectangles intersect or contain a query region and recursively traverse only relevant branches, reducing unnecessary exploration."
+    keywords: ["R-tree", "MBR", "spatial query", "intersection", "containment"]
+    similarity_threshold: 0.82
+    golden_chunks: null
+
+  - id: "rtree_mbr_importance"
+    question: "Explain the concept of a Minimum Bounding Rectangle (MBR) in R-trees and how it affects query performance."
+    expected_answer: "An MBR encloses all objects in a node; smaller and less overlapping MBRs reduce query branching and improve pruning efficiency. Large or overlapping MBRs increase search paths, harming query performance."
+    keywords: ["MBR", "overlap", "pruning", "R-tree performance"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+
+  - id: "learned_index_cdf"
+    question: "How does a learned index model approximate the CDF of keys, and how does that help predict key positions?"
+    expected_answer: "Learned indexes treat indexing as a prediction problem by approximating a key’s cumulative distribution function (CDF). The model predicts the position of a key in sorted order; the prediction guides lookup within a narrow search range, reducing search cost."
+    keywords: ["learned index", "CDF", "prediction", "position estimation"]
+    similarity_threshold: 0.82
+    golden_chunks: null
+
+  - id: "learned_index_limitations"
+    question: "What are the main challenges of learned indexes related to updates and error bounds?"
+    expected_answer: "Learned models must maintain accuracy as data changes; insertions or shifts in distribution can invalidate predictions, increasing error bounds. Large errors expand the search window, harming performance and requiring model retraining or fallback indexes."
+    keywords: ["learned index", "updates", "error bounds", "retraining"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+  
+  - id: "query_parsing_components"
+    question: "What are the main components extracted during query parsing, and how are they used during query execution?"
+    expected_answer: "Query parsing breaks a SQL-like query into structured components such as projection attributes, selection predicates, grouping keys, and aggregate functions. These parsed components guide query plan generation, telling the system which operators to instantiate, which attributes to read, and how to filter, aggregate, or group data during execution."
+    keywords: ["query parsing", "projection", "selection", "grouping", "query plan"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+
+  - id: "columnar_storage_advantages"
+    question: "Why is columnar storage more efficient than row storage for analytical workloads, especially when combined with compression?"
+    expected_answer: "Analytical workloads often access only a few columns from wide tables; columnar storage reads only those columns, reducing I/O. Because each column stores homogeneous data, it compresses well using techniques like delta encoding or bit-packing, further decreasing storage and speeding up scans compared to row-wise storage."
+    keywords: ["columnar storage", "compression", "analytical workloads", "I/O reduction"]
+    similarity_threshold: 0.8
+    golden_chunks: null
+
+  - id: "rtree_node_split_strategy"
+    question: "What is the purpose of the quadratic split algorithm in R-trees, and how does it choose seed entries?"
+    expected_answer: "The quadratic split algorithm resolves node overflow by selecting two entries (‘seeds’) that are farthest apart in area expansion cost, ensuring that clusters with minimal overlap and area growth are formed. By choosing seeds that maximize the wasted area if placed together, the algorithm reduces MBR overlap and improves query performance."
+    keywords: ["R-tree", "quadratic split", "node splitting", "seed selection", "MBR overlap"]
+    similarity_threshold: 0.82
+    golden_chunks: null
